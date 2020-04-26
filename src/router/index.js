@@ -9,13 +9,17 @@ Router
   .get('/dasbord', cors(), auth.verify,productController.getProduct)
   .post('/insert', productController.insertProduct)
   .delete('/delete/:id_product', productController.deleteProduct)
-  .get('/login',productController.login)
-  .get('/login/admin',productController.loginAdmin)
-  .post('/register/admin',productController.registerAdmin)
+  .post('/login',productController.login)
+  // .post('/login/admin',productController.loginAdmin)
+  // .post('/register/admin',productController.registerAdmin)
   .get('/users',productController.getUsers)
+  .post('/users/detile',productController.getUsersDetile)
   .post('/register',productController.register)
   .delete('/delete/users/:id_user',productController.deleteUsers)
   .get('/gettoken',productController.getToket)
-  .patch('/update/users/:id_user',productController.updateUsers);
+  .delete('/logout',productController.logOut)
+  .post('/insert/favorite',productController.insertFavorite)
+  .post('/favorite',productController.getFavorite)
+  .patch('/update/users',productController.updateUsers);
 
 module.exports = Router;

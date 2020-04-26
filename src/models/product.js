@@ -82,10 +82,32 @@ module.exports = {
             })
         })
     },
+    logOut: (email)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query(`DELETE FROM authorization WHERE email = ?`,email, (err, result)=>{
+                if(!err){
+                    resolve(result);
+                }else{
+                    reject(err);
+                }
+            })
+        })
+    },
 
     getUser: ()=>{
         return new Promise((resolve, reject)=>{
             connecting.query("SELECT * FROM users", (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+    getUserDetile: (email)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("SELECT * FROM users WHERE email =?",email, (err, result)=>{
                 if(!err){
                     resolve(result)
                 }else{
@@ -106,9 +128,9 @@ module.exports = {
             })
         })
     },
-    updateUser: (data,id_user)=>{
+    updateUser: (data,email)=>{
         return new Promise((resolve, reject)=>{
-            connecting.query("UPDATE users SET ? WHERE id_user = ?",[data,id_user], (err, result)=>{
+            connecting.query("UPDATE users SET ? WHERE email = ?",[data,email], (err, result)=>{
                 if(!err){
                     resolve(result)
                 }else{
@@ -142,6 +164,30 @@ module.exports = {
     updateToken: (data,email)=>{
         return new Promise((resolve, reject)=>{
             connecting.query("UPDATE authorization SET ? WHERE email = ?",[data,email], (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+
+    insertFavorite: (data)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("INSERT INTO favorite SET ?",data, (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+
+    getFavorite: (data)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("SELECT * FROM favorite WHERE email = ?",data, (err, result)=>{
                 if(!err){
                     resolve(result)
                 }else{
