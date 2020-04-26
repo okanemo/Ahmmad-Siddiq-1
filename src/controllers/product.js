@@ -80,7 +80,7 @@ module.exports = {
         const verify = {verify:1}
         productModel.verifyEmail(verify,email)
         .then(result=>{
-            res.json('Successful Verification ... !!!')
+            res.redirect('http://192.168.1.12:3000/verify')
         }).catch(err=> console.log(err))
     },
 
