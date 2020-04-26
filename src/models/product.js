@@ -1,10 +1,22 @@
 require('dotenv').config();
 const connecting = require('../config/db');
+const fs = require('fs');
 
 module.exports = {
     getProduct: ()=>{
         return new Promise((resolve, reject)=>{
             connecting.query("SELECT * FROM product", (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+    getDetileProduct: (data)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("SELECT * FROM product WHERE id_product = ?",data, (err, result)=>{
                 if(!err){
                     resolve(result)
                 }else{
@@ -26,11 +38,16 @@ module.exports = {
         })
     },
 
-    deleteProduct: (id_product)=>{
+    deleteProduct: (id_product,image)=>{
         return new Promise((resolve, reject)=>{
             connecting.query("DELETE FROM `product` WHERE `product`.`id_product` = ?", id_product, (err, result)=>{
                 if(!err){
                     resolve(result)
+                    const path = image.replace('http://localhost:4000', '.')
+                    fs.unlink(path, function (err) {
+                        if (err) throw err;
+                        return
+                      });
                 }else{
                     reject(err)
                 }

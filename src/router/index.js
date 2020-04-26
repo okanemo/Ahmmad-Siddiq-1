@@ -1,14 +1,38 @@
 const express = require('express');
 const cors = require('cors');
 const auth = require('../helpers/auth')
-
+const multer = require('multer');
+const path = require('path');
 const Router = express.Router();
 const productController = require('../controllers/product');
 
+const storage = multer.diskStorage({
+  destination: function(req, file, cb){
+      cb(null, './upload');
+  },
+  filename: function(req, file, cb){
+      cb(null, new Date().toISOString().replace(/:/g,'-')+file.originalname.replace(/\s/g,'-'));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter : (req, file, cb)=>{
+  const ext = path.extname(file.originalname);
+  if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== 'jpeg'){
+    return cb(new Error('Only images are allowed'))
+  }
+  cb(null, true)
+},
+  limits: {
+      fileSize: 1024 * 1024
+  }
+})
+
 Router
   .get('/dasbord', cors(), auth.verify,productController.getProduct)
-  .post('/insert',auth.verify, productController.insertProduct)
-  .delete('/delete/:id_product',auth.verify, productController.deleteProduct)
+  .post('/insert', upload.single('image'), productController.insertProduct)
+  .delete('/delete/:id_product', productController.deleteProduct)
   .post('/login',productController.login)
   .get('/verify/:token',productController.verifyEmail)
   .post('/forgote',productController.forgetPassword)

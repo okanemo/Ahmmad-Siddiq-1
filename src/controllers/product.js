@@ -14,6 +14,8 @@ module.exports = {
     },
 
     insertProduct: (req,res)=>{
+        req.body['image'] = `http://localhost:4000/upload/${req.file.filename}`;
+        // console.log(req.body)
         productModel.insertProduct(req.body)
         .then(result=>{
             req.body['id_product'] = result.insertId
@@ -23,11 +25,16 @@ module.exports = {
 
     deleteProduct: (req,res)=>{
         const id_product = req.params.id_product;
-        productModel.deleteProduct(id_product)
+        productModel.getDetileProduct(id_product)
         .then((result)=>{
-            res.json(result)
-        })
-        .catch(err=>console.log(err))
+            // res.json(result)
+            productModel.deleteProduct(id_product, result[0].image)
+            .then((result)=>{
+                res.json(result)
+            })
+            .catch(err=>console.log(err))
+          })
+          .catch(err=>console.log(err));
     },
 
     register: (req,res)=>{
@@ -80,7 +87,7 @@ module.exports = {
         const verify = {verify:1}
         productModel.verifyEmail(verify,email)
         .then(result=>{
-            res.redirect('http://192.168.1.12:3000/verify')
+            res.redirect('http://192.168.1.12:8000/verify')
         }).catch(err=> console.log(err))
     },
 
@@ -210,7 +217,7 @@ module.exports = {
                 from: process.env.EMAIL,
                 to: req.body.email,
                 subject: 'Verify email address',
-                text: `Please click this link to  http://192.168.1.12:3000/Forgote 
+                text: `Please click this link to  http://192.168.1.12:8000/Forgote 
                 Enter youre code : ${code}`
             };
             

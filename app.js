@@ -7,7 +7,7 @@ var cors = require('cors');
 const port = process.env.PORT || process.env.SERVER_PORT;
 
 app.use(cors());
-// app.use('/upload', express.static('./upload'));
+app.use('/upload', express.static('./upload'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}))
 
