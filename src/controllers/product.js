@@ -2,6 +2,7 @@ const productModel = require('../models/product');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
 const nodemailer = require('nodemailer');
+const jwtDecode = require('jwt-decode');
 
 module.exports = {
     getProduct: (req,res)=>{
@@ -49,7 +50,7 @@ module.exports = {
                     pass: process.env.PASSWORD
                 }
             };
-            // step 1
+            // step 2
             let transporter = nodemailer.createTransport(smtpConfig);
             
             let mailOptions = {
@@ -70,19 +71,19 @@ module.exports = {
         }).catch(err => console.log(err))
     },
 
+    verifyEmail:(req,res)=>{
+        const token = req.params.token
 
-    // registerAdmin: (req,res)=>{
-    //     let salt = bcrypt.genSaltSync(10);
-    //     const password = bcrypt.hashSync(req.body.password, salt)
-    //     req.body['password'] = password
-    //     // console.log(req.body);
-    //     productModel.registerAdmin(req.body)
-    //     .then(result => {
-    //         res.json(req.body.email)
-            
-    //     }).catch(err => console.log(err))
-    // },
-    
+        var decoded = jwtDecode(token);
+        const email = {email:decoded.email}
+        // console.log(email)
+        const verify = {verify:1}
+        productModel.verifyEmail(verify,email)
+        .then(result=>{
+            res.json('Successful Verification ... !!!')
+        }).catch(err=> console.log(err))
+    },
+
     login: (req,res)=>{
         // email only
         productModel.login(req.body.email)
@@ -95,8 +96,9 @@ module.exports = {
                     // res.json('Login Success')
                     const email = req.body.email
                     const level = results[0].level
-                    const token = jwt.sign({email,level}, process.env.PRIVATE_KEY, {expiresIn: '2h'})
-                    const data = {email,level,token}
+                    const verify = results[0].verify
+                    const token = jwt.sign({email}, process.env.PRIVATE_KEY, {expiresIn: '2h'})
+                    const data = {email,level,verify,token}
                     res.json(data)
                 }else{
                     res.json(1)
@@ -106,54 +108,6 @@ module.exports = {
                 res.json(0)
             }
             
-        }).catch(err => console.log(err))
-    },
-
-    loginAdmin: (req,res)=>{
-        // email only
-        productModel.loginAdmin(req.body.email)
-        .then(result => {
-            const password = bcrypt.compareSync(req.body.password,result[0].password)
-            if(password === true){
-                const email = req.body.email
-                const token = jwt.sign({email}, process.env.PRIVATE_KEY, {expiresIn: '2h'})
-                productModel.getToken(email)
-                .then(result=>{
-                    if(result[0] !== undefined){
-                        if(result[0].email === email){
-                            const authorization = token
-                            const data = {email,authorization}
-                            productModel.updateToken(data, email)
-                            .then(result=>{
-                                res.json({Authorization : token})
-                            })
-                            // res.json('ada')
-                        }else{
-                            const authorization = token
-                            const data = {email,authorization}
-                            // console.log(data)
-                            productModel.insertToken(data)
-                            .then(result=>{
-                                res.json({Authorization : token})         
-                            }).catch(err=> console.log(err))
-                            // res.json('kosong')
-                        }
-                    }else{
-                        const authorization = token
-                        const data = {email,authorization}
-                        // console.log(data)
-                        productModel.insertToken(data)
-                        .then(result=>{
-                            res.json({Authorization : token})         
-                        }).catch(err=> console.log(err))
-                        // res.json('kosong')
-                    }
-                    // res.json(result)
-                }).catch(err=> console.log(err))
-                // res.json({Authorization : token})
-            }else{
-                res.json('Password Wrong')
-            }
         }).catch(err => console.log(err))
     },
 
@@ -198,30 +152,12 @@ module.exports = {
     },
 
     updateUsers: (req,res)=>{
-        // let salt = bcrypt.genSaltSync(10);
-        // const password = bcrypt.hashSync(req.body.password, salt)
-        // const {username, email, level} = req.body
-        // const data = {username, email, password, level}
-        // console.log(req.body)
         productModel.updateUser(req.body, req.body.email)
         .then(result=>{
         //     // req.body['id_user'] = req.params.id_user
             res.json(result)
         }).catch(err=>console.log(err))
     },
-    // updateUsers: (req,res)=>{
-    //     let salt = bcrypt.genSaltSync(10);
-    //     const newpassword = bcrypt.hashSync(req.body.newpassword, salt)
-    //     const password = newpassword
-    //     const {username, email, level} = req.body
-    //     const data = {username, email, password, level}
-    //     // console.log(data)
-    //     productModel.updateUser(data, req.body.email)
-    //     .then(result=>{
-    //         // req.body['id_user'] = req.params.id_user
-    //         res.json(data)
-    //     }).catch(err=>console.log(err))
-    // },
 
     insertFavorite: (req,res)=>{
         productModel.insertFavorite(req.body)
@@ -232,9 +168,89 @@ module.exports = {
     },
 
     getFavorite: (req,res)=>{
-        console.log(req.body)
-        // const {email} = req.body
         productModel.getFavorite(req.body.email)
+        .then((result)=>{
+            res.json(result)
+        })
+        .catch(err=>console.log(err))
+    },
+    
+    deleteFavorite: (req,res)=>{
+        productModel.deleteFavorite(req.params.id)
+        .then((result)=>{
+            res.json(result)
+        })
+        .catch(err=>console.log(err))
+    },
+
+    forgetPassword: (req,res)=>{
+        const email = req.body.email
+        const token = jwt.sign({email}, process.env.PRIVATE_KEY, {expiresIn: '2h'});
+        let code = Math.floor(Math.random() * 9999 * 2);
+
+        const data = {email,code,token}
+        // console.log(data)
+        productModel.insertCode(data)
+        .then((result)=>{
+            res.json(data)
+            // OTP
+            var smtpConfig = {
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true, // use SSL
+                auth: {
+                    user: process.env.EMAIL,
+                    pass: process.env.PASSWORD
+                }
+            };
+            // step 2
+            let transporter = nodemailer.createTransport(smtpConfig);
+            
+            let mailOptions = {
+                from: process.env.EMAIL,
+                to: req.body.email,
+                subject: 'Verify email address',
+                text: `Please click this link to  http://192.168.1.12:3000/Forgote 
+                Enter youre code : ${code}`
+            };
+            
+            // step 3
+            transporter.sendMail(mailOptions, function(error, info) {
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log("Email sent: " + info.response);
+                }
+              });
+        })
+        .catch(err=>console.log(err))
+    },
+
+    cekCode: (req,res)=>{
+        const data = req.body.code
+        productModel.getCode(data)
+        .then((result)=>{
+            res.json(result)
+        })
+        .catch(err=>console.log(err))
+    },
+
+    updatePassword:(req,res)=>{
+        const pass = req.body.password
+        const email = req.body.email
+        let salt = bcrypt.genSaltSync(10);
+        const passwordhash = bcrypt.hashSync(pass, salt)
+        const password = {password:passwordhash}
+        productModel.updateUser(password,email)
+        .then((result)=>{
+            res.json(result)
+        })
+        .catch(err=>console.log(err))
+    },
+
+    deleteCode:(req,res)=>{
+        const email = req.params.email
+        productModel.deletCode(email)
         .then((result)=>{
             res.json(result)
         })

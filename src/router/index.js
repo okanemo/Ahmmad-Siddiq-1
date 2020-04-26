@@ -10,8 +10,9 @@ Router
   .post('/insert', productController.insertProduct)
   .delete('/delete/:id_product', productController.deleteProduct)
   .post('/login',productController.login)
-  // .post('/login/admin',productController.loginAdmin)
-  // .post('/register/admin',productController.registerAdmin)
+  .get('/verify/:token',productController.verifyEmail)
+  .post('/forgote',productController.forgetPassword)
+  .post('/getcode',productController.cekCode)
   .get('/users',productController.getUsers)
   .post('/users/detile',productController.getUsersDetile)
   .post('/register',productController.register)
@@ -20,6 +21,9 @@ Router
   .delete('/logout',productController.logOut)
   .post('/insert/favorite',productController.insertFavorite)
   .post('/favorite',productController.getFavorite)
-  .patch('/update/users',productController.updateUsers);
+  .delete('/delete/favorite/:id',productController.deleteFavorite)
+  .patch('/update/users',productController.updateUsers)
+  .delete('/delete/code/:email',productController.deleteCode)
+  .patch('/update/password',productController.updatePassword);
 
 module.exports = Router;

@@ -196,4 +196,64 @@ module.exports = {
             })
         })
     },
+
+    deleteFavorite: (id_favorite)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("DELETE FROM favorite  WHERE id_favorite = ?",id_favorite, (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+
+    verifyEmail: (verify,email)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("UPDATE users SET ? WHERE ?",[verify,email], (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+
+    insertCode: (data)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("INSERT INTO authorization SET ?",data, (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+
+    getCode: (data)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("SELECT * FROM authorization WHERE code = ?",data, (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
+
+    deletCode: (data)=>{
+        return new Promise((resolve, reject)=>{
+            connecting.query("DELETE FROM authorization WHERE email = ?",data, (err, result)=>{
+                if(!err){
+                    resolve(result)
+                }else{
+                    reject(err)
+                }
+            })
+        })
+    },
 }
