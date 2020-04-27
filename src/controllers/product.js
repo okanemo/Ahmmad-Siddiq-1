@@ -14,7 +14,7 @@ module.exports = {
     },
 
     insertProduct: (req,res)=>{
-        req.body['image'] = `http://localhost:4000/upload/${req.file.filename}`;
+        req.body['image'] = `http://3.92.225.147:4000/upload/${req.file.filename}`;
         // console.log(req.body)
         productModel.insertProduct(req.body)
         .then(result=>{

@@ -31,8 +31,8 @@ const upload = multer({
 
 Router
   .get('/dasbord', cors(), auth.verify,productController.getProduct)
-  .post('/insert', upload.single('image'), productController.insertProduct)
-  .delete('/delete/:id_product', productController.deleteProduct)
+  .post('/insert',auth.verify, upload.single('image'), productController.insertProduct)
+  .delete('/delete/:id_product',auth.verify, productController.deleteProduct)
   .post('/login',productController.login)
   .get('/verify/:token',productController.verifyEmail)
   .post('/forgote',productController.forgetPassword)
