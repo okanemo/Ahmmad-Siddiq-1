@@ -14,7 +14,7 @@ module.exports = {
     },
 
     insertProduct: (req,res)=>{
-        req.body['image'] = `http://3.92.225.147:4000/upload/${req.file.filename}`;
+        req.body['image'] = `http://54.204.68.167:4000/upload/${req.file.filename}`;
         // console.log(req.body)
         productModel.insertProduct(req.body)
         .then(result=>{
@@ -64,7 +64,7 @@ module.exports = {
                 from: process.env.EMAIL,
                 to: req.body.email,
                 subject: 'Verify email address',
-                text: `Please click this link to  http://192.168.1.12:4000/verify/${token}`
+                text: `Please click this link to  http://54.204.68.167:4000/verify/${token}`
             };
             
             // step 3

@@ -43,7 +43,7 @@ module.exports = {
             connecting.query("DELETE FROM `product` WHERE `product`.`id_product` = ?", id_product, (err, result)=>{
                 if(!err){
                     resolve(result)
-                    const path = image.replace('http://3.92.225.147:4000', '.')
+                    const path = image.replace('http://54.204.68.167:4000', '.')
                     fs.unlink(path, function (err) {
                         if (err) throw err;
                         return
