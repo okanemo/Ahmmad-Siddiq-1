@@ -64,7 +64,7 @@ module.exports = {
                 from: process.env.EMAIL,
                 to: req.body.email,
                 subject: 'Verify email address',
-                text: `Please click this link to  http://54.204.68.167:4000/verify/${token}`
+                text: `Please click this link to  http://54.204.68.167:8000/verify/${token}`
             };
             
             // step 3
@@ -87,7 +87,7 @@ module.exports = {
         const verify = {verify:1}
         productModel.verifyEmail(verify,email)
         .then(result=>{
-            res.redirect('http://192.168.1.12:8000/verify')
+            res.redirect('http://54.204.68.167:8000/verify')
         }).catch(err=> console.log(err))
     },
 
@@ -217,7 +217,7 @@ module.exports = {
                 from: process.env.EMAIL,
                 to: req.body.email,
                 subject: 'Verify email address',
-                text: `Please click this link to  http://192.168.1.12:8000/Forgote 
+                text: `Please click this link to  http://54.204.68.167:8000/Forgote 
                 Enter youre code : ${code}`
             };
             
